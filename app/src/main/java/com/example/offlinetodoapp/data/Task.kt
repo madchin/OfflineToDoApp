@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Task(
-    @PrimaryKey val id: Int,
     @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "description") val description: String?
+    @ColumnInfo(name = "description") val description: String,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
 )

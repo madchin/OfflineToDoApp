@@ -7,11 +7,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.room.Room
+import com.example.offlinetodoapp.data.OfflineTaskRepository
+import com.example.offlinetodoapp.data.ToDoAppDatabase
 import com.example.offlinetodoapp.ui.OfflineToDoApp
 import com.example.offlinetodoapp.ui.theme.OfflineToDoAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val db = Room.databaseBuilder(
+            applicationContext,
+            ToDoAppDatabase::class.java, "todoapp_database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+        val taskRepository = OfflineTaskRepository(db.taskDao)
+
         super.onCreate(savedInstanceState)
         setContent {
             OfflineToDoAppTheme {
@@ -20,7 +31,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    OfflineToDoApp()
+                    OfflineToDoApp(taskRepository)
                 }
             }
         }

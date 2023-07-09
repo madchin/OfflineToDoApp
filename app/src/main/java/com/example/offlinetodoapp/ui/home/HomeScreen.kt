@@ -28,20 +28,14 @@ import com.example.offlinetodoapp.data.Task
 @Composable
 fun HomeScreen(
     onTaskAddButtonClick: () -> Unit,
-    tasks: List<Task>?,
+    tasks: List<Task>,
     modifier: Modifier = Modifier
 ) {
-    val exampleTasks = listOf(
-        Task(
-            id = 1,
-            title = "Example Task",
-            description = "Example description provided for task"
-        )
-    )
+
     Column(modifier = modifier.fillMaxSize()) {
         Box {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(tasks ?: exampleTasks, key = { it.id }) {
+                items(tasks, key = { it.id }) {
                     TaskItem(task = it, modifier = Modifier.padding(16.dp))
                 }
             }
@@ -75,7 +69,7 @@ fun AddTaskButton(
 @Composable
 fun TaskItem(task: Task, modifier: Modifier = Modifier) {
     val title = task.title.capitalize(Locale.current)
-    val description = task.description?.capitalize(Locale.current) ?: "Description"
+    val description = task.description.capitalize(Locale.current)
     Card(
         modifier = modifier
             .fillMaxWidth()
