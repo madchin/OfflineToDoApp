@@ -46,7 +46,7 @@ class TaskEditViewModel(
         }
     }
 
-    fun onTaskEdit() {
+    fun editTask() {
         viewModelScope.launch {
             if (!validateInputs()) {
                 uiState = uiState.copy(

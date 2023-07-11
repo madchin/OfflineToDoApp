@@ -47,7 +47,7 @@ fun TaskEditScreen(
         )
         OutlinedButton(
             onClick = {
-                viewModel.onTaskEdit()
+                viewModel.editTask()
                 navigateUp()
             },
             enabled = uiState.areInputsValid,
