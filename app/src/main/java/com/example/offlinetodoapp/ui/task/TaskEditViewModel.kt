@@ -27,7 +27,7 @@ fun Task.toTaskEditUiState(): TaskEditUiState =
     TaskEditUiState(this.title, this.description, areInputsValid = true)
 
 fun TaskEditUiState.toTask(id: Int): Task =
-    Task(this.title, this.description, id = id)
+    Task(this.title.trim(), this.description.trim(), id = id)
 
 class TaskEditViewModel(
     savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("taskId" to 1)),

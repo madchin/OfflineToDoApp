@@ -3,7 +3,6 @@ package com.example.offlinetodoapp.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,7 +20,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
@@ -53,41 +52,34 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
     val uiState: HomeUiState = viewModel.uiState
-
-    Column(modifier = modifier.fillMaxSize()) {
-        Box {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(uiState.tasks, key = { it.id }) {
-                    TaskItem(
-                        task = it,
-                        modifier = Modifier.padding(16.dp),
-                        onTaskEditButtonClick = {
-                            onTaskEditButtonClick(it.id)
-                        },
-                        onTaskDeleteButtonClick = {
-                            viewModel.toggleDialog(it)
-                        }
-                    )
-                }
-            }
-            AddTaskButton(
-                onTaskAddButtonClick = onTaskAddButtonClick,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
-            if (uiState.isDeleteDialogShown) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    AppDialog(
-                        title = "Delete task",
-                        description = "Are you sure you want to delete this task? Action is irreversible.",
-                        onDismiss = { viewModel.toggleDialog() },
-                        onAccept = { viewModel.deleteTask() }
-                    )
-                }
+    Box(modifier = modifier.fillMaxSize()) {
+        LazyColumn {
+            items(uiState.tasks, key = { it.id }) {
+                TaskItem(
+                    task = it,
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                    onTaskEditButtonClick = {
+                        onTaskEditButtonClick(it.id)
+                    },
+                    onTaskDeleteButtonClick = {
+                        viewModel.toggleDialog(it)
+                    }
+                )
             }
         }
+        AddTaskButton(
+            onTaskAddButtonClick = onTaskAddButtonClick,
+            modifier = Modifier.align(Alignment.BottomEnd)
+        )
+    }
+    if (uiState.isDeleteDialogShown) {
+        AppDialog(
+            title = "Delete task",
+            description = "Are you sure you want to delete this task? Action is irreversible.",
+            onDismiss = { viewModel.toggleDialog() },
+            onAccept = { viewModel.deleteTask() }
+        )
+
     }
 }
 
@@ -96,7 +88,7 @@ fun AddTaskButton(
     onTaskAddButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExtendedFloatingActionButton(
+    ElevatedButton(
         onClick = { onTaskAddButtonClick() },
         modifier = modifier
             .padding(16.dp)
@@ -129,25 +121,26 @@ fun TaskItem(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .padding(vertical = 16.dp, horizontal = 32.dp)
                     .fillMaxWidth()
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
+                    modifier = Modifier.padding(end = 32.dp)
                 )
                 Text(
                     text = description,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(top = 24.dp, bottom = 8.dp, end = 32.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
         TaskMenu(
             isShown = showMenu,
-            onMenuToggle = { showMenu = !showMenu }
+            onMenuToggle = { showMenu = !showMenu },
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
         ) {
             MenuItem(
                 icon = Icons.Default.Edit,

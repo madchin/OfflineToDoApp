@@ -19,7 +19,7 @@ data class TaskAddUiState(
     val areInputsValid: Boolean = true
 )
 
-fun TaskAddUiState.toTask() = Task(this.title, this.description)
+fun TaskAddUiState.toTask() = Task(this.title.trim(), this.description.trim())
 
 class TaskAddViewModel(private val taskRepository: TaskRepository) : ViewModel() {
 
