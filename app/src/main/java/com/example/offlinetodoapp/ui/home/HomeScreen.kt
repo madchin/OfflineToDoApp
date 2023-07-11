@@ -20,7 +20,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
@@ -88,7 +88,7 @@ fun AddTaskButton(
     onTaskAddButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ElevatedButton(
+    ExtendedFloatingActionButton(
         onClick = { onTaskAddButtonClick() },
         modifier = modifier
             .padding(16.dp)
