@@ -1,14 +1,16 @@
 package com.example.offlinetodoapp.ui.task
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.offlinetodoapp.AppContainer
 import com.example.offlinetodoapp.data.Task
 import com.example.offlinetodoapp.data.TaskRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.offlinetodoapp.utils.InputType
 import kotlinx.coroutines.launch
 
 data class TaskAddUiState(
@@ -17,66 +19,52 @@ data class TaskAddUiState(
     val areInputsValid: Boolean = true
 )
 
-sealed interface Input {
-    object TaskTitle : Input
-
-    object TaskDescription : Input
-}
+fun TaskAddUiState.toTask() = Task(this.title, this.description)
 
 class TaskAddViewModel(private val taskRepository: TaskRepository) : ViewModel() {
 
-    private var _uiState = MutableStateFlow(TaskAddUiState())
+    var uiState by mutableStateOf(TaskAddUiState())
+        private set
 
-    val uiState = _uiState.asStateFlow()
     fun onTaskAdd() {
         viewModelScope.launch {
             if (!validateInputs()) {
-                _uiState.update {
-                    it.copy(
-                        areInputsValid = false
-                    )
-                }
+                uiState = uiState.copy(
+                    areInputsValid = false
+                )
+
                 return@launch
             }
-            taskRepository.insertTask(
-                Task(
-                    title = _uiState.value.title,
-                    description = _uiState.value.description
-                )
-            )
-            _uiState.update { TaskAddUiState() }
+            taskRepository.insertTask(uiState.toTask())
+            uiState = TaskAddUiState()
         }
     }
 
     fun validateInputs(): Boolean =
-        _uiState.value.title.trim().isNotEmpty() || _uiState.value.description.trim().isNotEmpty()
+        uiState.title.trim().isNotEmpty() || uiState.description.trim().isNotEmpty()
 
-    fun onInputChange(input: Input, value: String) {
+    fun onInputChange(input: InputType, value: String) {
         when (input) {
-            is Input.TaskTitle -> {
-                _uiState.update {
-                    it.copy(
-                        title = value,
-                        areInputsValid = true
-                    )
-                }
+            is InputType.TaskTitle -> {
+                uiState = uiState.copy(
+                    title = value,
+                    areInputsValid = true
+                )
             }
 
-            is Input.TaskDescription -> {
-                _uiState.update {
-                    it.copy(
-                        description = value,
-                        areInputsValid = true
-                    )
-                }
+            is InputType.TaskDescription -> {
+                uiState = uiState.copy(
+                    description = value,
+                    areInputsValid = true
+                )
             }
         }
     }
 
     companion object {
-        fun Factory(taskRepository: TaskRepository) = viewModelFactory {
+        val Factory = viewModelFactory {
             initializer {
-                TaskAddViewModel(taskRepository)
+                TaskAddViewModel(AppContainer.taskRepository)
             }
         }
     }

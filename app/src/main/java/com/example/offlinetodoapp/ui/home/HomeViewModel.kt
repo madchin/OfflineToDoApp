@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.offlinetodoapp.AppContainer
 import com.example.offlinetodoapp.data.Task
 import com.example.offlinetodoapp.data.TaskRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,9 +27,9 @@ class HomeViewModel(
     val uiState = _uiState
 
     companion object {
-        fun Factory(taskRepository: TaskRepository) = viewModelFactory {
+        val Factory = viewModelFactory {
             initializer {
-                HomeViewModel(taskRepository)
+                HomeViewModel(AppContainer.taskRepository)
             }
         }
     }
