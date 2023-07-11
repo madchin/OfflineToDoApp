@@ -1,5 +1,8 @@
 package com.example.offlinetodoapp.ui.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -7,24 +10,39 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.offlinetodoapp.AppContainer
 import com.example.offlinetodoapp.data.Task
 import com.example.offlinetodoapp.data.TaskRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    taskRepository: TaskRepository
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    private val _uiState: StateFlow<HomeUiState> = taskRepository
-        .getAllTasksStream()
-        .map { HomeUiState(it) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = HomeUiState()
+    var uiState by mutableStateOf(HomeUiState())
+        private set
+
+    init {
+        viewModelScope.launch {
+            taskRepository
+                .getAllTasksStream()
+                .collect {
+                    uiState = uiState.copy(tasks = it)
+                }
+        }
+    }
+
+    fun toggleDialog(task: Task = Task()) {
+        val isShown = uiState.isDeleteDialogShown
+        uiState = uiState.copy(
+            isDeleteDialogShown = !isShown,
+            taskToDelete = task
         )
-    val uiState = _uiState
+    }
+
+    fun deleteTask() {
+        viewModelScope.launch {
+            taskRepository.deleteTask(uiState.taskToDelete)
+            uiState = uiState.copy(isDeleteDialogShown = false)
+        }
+    }
 
     companion object {
         val Factory = viewModelFactory {
@@ -36,5 +54,7 @@ class HomeViewModel(
 }
 
 data class HomeUiState(
-    val tasks: List<Task> = listOf()
+    val tasks: List<Task> = listOf(),
+    val isDeleteDialogShown: Boolean = false,
+    val taskToDelete: Task = Task()
 )

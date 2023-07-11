@@ -3,6 +3,7 @@ package com.example.offlinetodoapp.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -26,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.offlinetodoapp.data.Task
+import com.example.offlinetodoapp.ui.components.AppDialog
 
 @Composable
 fun HomeScreen(
@@ -51,7 +52,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
 ) {
-    val uiState: HomeUiState by viewModel.uiState.collectAsState()
+    val uiState: HomeUiState = viewModel.uiState
 
     Column(modifier = modifier.fillMaxSize()) {
         Box {
@@ -62,6 +63,9 @@ fun HomeScreen(
                         modifier = Modifier.padding(16.dp),
                         onTaskEditButtonClick = {
                             onTaskEditButtonClick(it.id)
+                        },
+                        onTaskDeleteButtonClick = {
+                            viewModel.toggleDialog(it)
                         }
                     )
                 }
@@ -70,6 +74,19 @@ fun HomeScreen(
                 onTaskAddButtonClick = onTaskAddButtonClick,
                 modifier = Modifier.align(Alignment.BottomEnd)
             )
+            if (uiState.isDeleteDialogShown) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AppDialog(
+                        title = "Delete task",
+                        description = "Are you sure you want to delete this task? Action is irreversible.",
+                        onDismiss = { viewModel.toggleDialog() },
+                        onAccept = { viewModel.deleteTask() }
+                    )
+                }
+            }
         }
     }
 }
@@ -97,6 +114,7 @@ fun AddTaskButton(
 fun TaskItem(
     task: Task,
     onTaskEditButtonClick: () -> Unit,
+    onTaskDeleteButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = task.title.capitalize(Locale.current)
@@ -145,7 +163,10 @@ fun TaskItem(
                 icon = Icons.Default.Delete,
                 itemName = "Delete",
                 contentDescription = "Menu item delete task",
-                onMenuItemClick = {}
+                onMenuItemClick = {
+                    showMenu = !showMenu
+                    onTaskDeleteButtonClick()
+                }
             )
         }
     }
@@ -218,6 +239,6 @@ fun TaskMenu(
 fun HomeScreenPreview() {
     HomeScreen(
         onTaskAddButtonClick = {},
-        onTaskEditButtonClick = {}
+        onTaskEditButtonClick = {},
     )
 }
