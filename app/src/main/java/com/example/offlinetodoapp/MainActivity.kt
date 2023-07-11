@@ -13,6 +13,10 @@ import com.example.offlinetodoapp.data.ToDoAppDatabase
 import com.example.offlinetodoapp.ui.OfflineToDoApp
 import com.example.offlinetodoapp.ui.theme.OfflineToDoAppTheme
 
+object AppContainer {
+    lateinit var taskRepository: OfflineTaskRepository
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val db = Room.databaseBuilder(
@@ -21,7 +25,7 @@ class MainActivity : ComponentActivity() {
         )
             .fallbackToDestructiveMigration()
             .build()
-        val taskRepository = OfflineTaskRepository(db.taskDao)
+        AppContainer.taskRepository = OfflineTaskRepository(db.taskDao)
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -31,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    OfflineToDoApp(taskRepository)
+                    OfflineToDoApp()
                 }
             }
         }
