@@ -9,12 +9,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.room.Room
 import com.example.offlinetodoapp.data.OfflineTaskRepository
+import com.example.offlinetodoapp.data.TaskRepository
 import com.example.offlinetodoapp.data.ToDoAppDatabase
 import com.example.offlinetodoapp.ui.OfflineToDoApp
 import com.example.offlinetodoapp.ui.theme.OfflineToDoAppTheme
 
 object AppContainer {
-    lateinit var taskRepository: OfflineTaskRepository
+    lateinit var taskRepository: TaskRepository
 }
 
 class MainActivity : ComponentActivity() {
